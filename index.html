@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="tl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>APOY ni SHYNE - START NG VOLTAGE AT ELECTRIC</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            fire: {
+              50: '#fff7ed',
+              100: '#ffedd5',
+              400: '#fb923c',
+              500: '#f97316',
+              600: '#ea580c',
+              700: '#c2410c',
+              900: '#7c2d12',
+            },
+            electric: '#38bdf8'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap');
+    
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #0b0f19;
+      color: #f3f4f6;
+      touch-action: manipulation;
+    }
+
+    .font-digital {
+      font-family: 'Orbitron', monospace;
+    }
+
+    /* Custom styling for sliders */
+    input[type=range] {
+      -webkit-appearance: none;
+      background: #1f2937;
+      border-radius: 8px;
+      height: 10px;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 24px;
+      width: 24px;
+      border-radius: 50%;
+      background: #f97316;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(249, 115, 22, 0.8);
+      border: 2px solid #fff;
+    }
+    input[type=range]::-moz-range-thumb {
+      height: 24px;
+      width: 24px;
+      border-radius: 50%;
+      background: #f97316;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(249, 115, 22, 0.8);
+      border: 2px solid #fff;
+    }
+
+    /* Glowing effects */
+    .glow-orange {
+      box-shadow: 0 0 20px rgba(249, 115, 22, 0.35);
+    }
+    .glow-red {
+      box-shadow: 0 0 25px rgba(239, 68, 68, 0.6);
+    }
+    .glow-blue {
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+    }
+
+    /* Tab active styles */
+    .tab-btn.active {
+      background-color: #f97316;
+      color: #ffffff;
+      box-shadow: 0 0 12px rgba(249, 115, 22, 0.5);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between overflow-x-hidden">
+
+  <!-- Header Section -->
+  <header class="bg-gray-900/90 backdrop-blur border-b border-orange-500/20 sticky top-0 z-50 px-4 py-3 shadow-lg">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-red-600 to-amber-400 flex items-center justify-center text-white shadow-lg shadow-orange-500/30">
+          <i class="fa-solid fa-fire-flame-curved text-xl animate-pulse"></i>
+        </div>
+        <div>
+          <h1 class="font-extrabold text-lg sm:text-xl tracking-tight text-white flex items-center gap-2">
+            APOY <span class="text-xs px-2 py-0.5 rounded bg-orange-500/20 text-orange-400 border border-orange-500/30 font-normal">Ohm's Law Sim</span>
+          </h1>
+          <p class="text-xs text-gray-400 hidden sm:block">Ang pagtukoy ng pera para sa gobyerno</p>
+        </div>
+      </div>
+
+      <!-- Navigation / Mode Tabs -->
+      <div class="flex bg-gray-800/80 p-1 rounded-xl border border-gray-700">
+        <button id="nav-sim" onclick="switchTab('sim')" class="tab-btn active px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-1.5">
+          <i class="fa-solid fa-flask"></i> <span>Simulation</span>
+        </button>
+        <button id="nav-quiz" onclick="switchTab('quiz')" class="tab-btn px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-gray-400 hover:text-white transition flex items-center gap-1.5">
+          <i class="fa-solid fa-brain"></i> <span>oh magtest ka</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="max-w-7xl mx-auto w-full p-3 sm:p-5 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-5">
+
+    <!-- SIMULATION TAB VIEW -->
+    <div id="view-sim" class="lg:col-span-12 grid grid-cols-1 lg:grid-cols-12 gap-5">
+      
+      <!-- Left Column: Controls & Dynamic Readouts (4 cols on desktop) -->
+      <section class="lg:col-span-4 space-y-4 flex flex-col">
+        
+        <!-- Digital Meters Card -->
+        <div class="bg-gray-900/80 border border-gray-800 rounded-2xl p-4 shadow-xl backdrop-blur">
+          <h2 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 flex items-center justify-between">
+            <span><i class="fa-solid fa-gauge-high text-orange-400 mr-1.5"></i> ruler (Meters)</span>
+            <span id="circuit-status-badge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-green-500/20 text-green-400 border border-green-500/30">open this shi* (ON)</span>
+          </h2>
+
+          <div class="grid grid-cols-2 gap-2.5">
+            <!-- Voltage readout -->
+            <div class="bg-gray-950/70 p-3 rounded-xl border border-blue-500/20 flex flex-col justify-between">
+              <span class="text-[11px] text-gray-400 font-medium">Boltage (V)</span>
+              <div class="mt-1 flex items-baseline justify-between">
+                <span id="readout-voltage" class="text-xl sm:text-2xl font-bold font-digital text-sky-400">12.0</span>
+                <span class="text-xs text-gray-500">Volts</span>
+              </div>
+            </div>
+
+            <!-- Resistance readout -->
+            <div class="bg-gray-950/70 p-3 rounded-xl border border-amber-500/20 flex flex-col justify-between">
+              <span class="text-[11px] text-gray-400 font-medium">Resistance (R)</span>
+              <div class="mt-1 flex items-baseline justify-between">
+                <span id="readout-resistance" class="text-xl sm:text-2xl font-bold font-digital text-amber-400">10.0</span>
+                <span class="text-xs text-gray-500">Ohms (Ω)</span>
+              </div>
+            </div>
+
+            <!-- Current readout -->
+            <div class="bg-gray-950/70 p-3 rounded-xl border border-emerald-500/20 flex flex-col justify-between">
+              <span class="text-[11px] text-gray-400 font-medium">Electric (I)</span>
+              <div class="mt-1 flex items-baseline justify-between">
+                <span id="readout-current" class="text-xl sm:text-2xl font-bold font-digital text-emerald-400">1.20</span>
+                <span class="text-xs text-gray-500">Ampere</span>
+              </div>
+              <div class="text-[10px] text-gray-500 mt-0.5" id="readout-ma">1200 mA</div>
+            </div>
+
+            <!-- Power readout -->
+            <div id="power-box" class="bg-gray-950/70 p-3 rounded-xl border border-orange-500/20 flex flex-col justify-between transition-all duration-300">
+              <span class="text-[11px] text-gray-400 font-medium">Power (P)</span>
+              <div class="mt-1 flex items-baseline justify-between">
+                <span id="readout-power" class="text-xl sm:text-2xl font-bold font-digital text-orange-400">14.4</span>
+                <span class="text-xs text-gray-500">Watts</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Overload / Burning Warning Banner -->
+          <div id="overload-warning" class="hidden mt-3 p-2.5 rounded-xl bg-red-950/80 border border-red-500/60 text-red-300 text-xs flex items-center gap-2 animate-bounce">
+            <i class="fa-solid fa-triangle-exclamation text-red-500 text-lg"></i>
+            <div>
+              <p class="font-bold uppercase tracking-wide">Ano nasusunog natitigan nlng ba! (OVERLOAD)</p>
+              <p class="text-[11px] text-red-300/80">HOY BIT*H BABAAN MO YAN ANTAAS NA OH HUHU.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sliders & Interactive Controls -->
+        <div class="bg-gray-900/80 border border-gray-800 rounded-2xl p-4 shadow-xl backdrop-blur space-y-4">
+          <h2 class="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center justify-between">
+            <span><i class="fa-solid fa-sliders text-orange-400 mr-1.5"></i> Mga Kontrol ng circuit</span>
+            <button id="toggle-switch-btn" onclick="toggleCircuitSwitch()" class="px-3 py-1 rounded-lg text-xs font-bold bg-green-600 text-white shadow-md active:scale-95 transition flex items-center gap-1.5">
+              <i class="fa-solid fa-power-off"></i> <span id="switch-text">Sirkito: NAKABUKAS</span>
+            </button>
+          </h2>
+
+          <!-- Voltage Slider -->
+          <div class="space-y-1.5">
+            <div class="flex justify-between items-center text-sm">
+              <label for="slider-voltage" class="font-medium text-gray-300 flex items-center gap-1.5">
+                <i class="fa-solid fa-bolt text-sky-400"></i> Boltahe (V)
+              </label>
+              <span class="font-digital text-sky-400 font-bold text-base" id="val-voltage">12V</span>
+            </div>
+            <input type="range" id="slider-voltage" min="0" max="50" step="0.5" value="12" class="w-full accent-sky-400" oninput="updateCircuitValues()">
+            <div class="flex justify-between text-[10px] text-gray-500">
+              <span>0V</span>
+              <span>25V</span>
+              <span>50V</span>
+            </div>
+          </div>
+
+          <!-- Resistance Slider -->
+          <div class="space-y-1.5">
+            <div class="flex justify-between items-center text-sm">
+              <label for="slider-resistance" class="font-medium text-gray-300 flex items-center gap-1.5">
+                <i class="fa-solid fa-microchip text-amber-400"></i> Resistensya (R)
+              </label>
+              <span class="font-digital text-amber-400 font-bold text-base" id="val-resistance">10Ω</span>
+            </div>
+            <input type="range" id="slider-resistance" min="1" max="250" step="1" value="10" class="w-full accent-amber-400" oninput="updateCircuitValues()">
+            <div class="flex justify-between text-[10px] text-gray-500">
+              <span>1 Ω</span>
+              <span>125 Ω</span>
+              <span>250 Ω</span>
+            </div>
+          </div>
+
+          <!-- Presets Section -->
+          <div class="pt-2 border-t border-gray-800">
+            <span class="text-xs text-gray-400 font-medium block mb-2">Mga Halimbawang Sitwasyon (Presets):</span>
+            <div class="grid grid-cols-2 gap-1.5">
+              <button onclick="applyPreset('normal')" class="px-2.5 py-1.5 bg-gray-800 hover:bg-gray-700 text-xs text-gray-300 rounded-lg transition border border-gray-700 text-left">
+                💡 shyne bright
+              </button>
+              <button onclick="applyPreset('high_r')" class="px-2.5 py-1.5 bg-gray-800 hover:bg-gray-700 text-xs text-gray-300 rounded-lg transition border border-gray-700 text-left">
+                🛡️ High resistance 
+              </button>
+              <button onclick="applyPreset('short')" class="px-2.5 py-1.5 bg-gray-800 hover:bg-red-900/40 text-xs text-red-300 rounded-lg transition border border-red-900/50 text-left">
+                🔥 Overheat ang si shyne
+              </button>
+              <button onclick="applyPreset('night')" class="px-2.5 py-1.5 bg-gray-800 hover:bg-gray-700 text-xs text-gray-300 rounded-lg transition border border-gray-700 text-left">
+                🌙 moonwalk
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Column: Interactive Circuit Diagram & Moving Graph (8 cols on desktop) -->
+      <section class="lg:col-span-8 space-y-4">
+        
+        <!-- Interactive Circuit SVG & Particle Canvas -->
+        <div class="bg-gray-900/80 border border-gray-800 rounded-2xl p-4 shadow-xl backdrop-blur relative overflow-hidden flex flex-col justify-between">
+          <div class="flex justify-between items-center mb-2 z-10">
+            <h2 class="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center">
+              <i class="fa-solid fa-diagram-project text-orange-400 mr-1.5"></i> Interactive Circuit Diagram
+            </h2>
+            <div class="text-[11px] text-gray-400 bg-gray-800/80 px-2.5 py-1 rounded-md border border-gray-700 flex items-center gap-2">
+              <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-sky-400 inline-block animate-ping"></span> Elektrons</span>
+              <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-orange-500 inline-block"></span> Apoy/Init</span>
+            </div>
+          </div>
+
+          <!-- Circuit Container -->
+          <div class="relative w-full h-64 sm:h-80 bg-gray-950/90 rounded-xl border border-gray-800/80 overflow-hidden flex items-center justify-center">
+            
+            <!-- Canvas layer for flames and sparks overlay -->
+            <canvas id="flameCanvas" class="absolute inset-0 w-full h-full pointer-events-none z-20"></canvas>
+
+            <!-- SVG Circuit Wire & Components -->
+            <svg id="circuitSvg" viewBox="0 0 600 320" class="w-full h-full max-w-2xl select-none z-10">
+              <defs>
+                <!-- Glow Filters -->
+                <filter id="glow-bulb" x="-50%" y="-50%" width="200%" height="200%">
+                  <feGaussianBlur stdDeviation="6" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+                <filter id="glow-electron" x="-50%" y="-50%" width="200%" height="200%">
+                  <feGaussianBlur stdDeviation="2" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+              </defs>
+
+              <!-- Main Circuit Rectangular Path Wire -->
+              <path id="wire-path" d="M 100,60 L 500,60 L 500,260 L 100,260 Z" fill="none" stroke="#374151" stroke-width="6" stroke-linejoin="round"/>
+              <!-- Active Wire Highlight -->
+              <path id="wire-active" d="M 100,60 L 500,60 L 500,260 L 100,260 Z" fill="none" stroke="#1e293b" stroke-width="4" stroke-linejoin="round"/>
+
+              <!-- VOLTAGE SOURCE / BATTERY (Left Side) -->
+              <g transform="translate(100, 160)" class="cursor-pointer" onclick="focusSlider('voltage')">
+                <rect x="-35" y="-45" width="70" height="90" rx="8" fill="#111827" stroke="#38bdf8" stroke-width="2" />
+                <!-- Battery Terminals -->
+                <line x1="-20" y1="-25" x2="20" y2="-25" stroke="#ef4444" stroke-width="4" stroke-linecap="round"/>
+                <line x1="-12" y1="25" x2="12" y2="25" stroke="#38bdf8" stroke-width="4" stroke-linecap="round"/>
+                <!-- Plus and Minus icons -->
+                <text x="0" y="-30" fill="#ef4444" font-size="14" font-weight="bold" text-anchor="middle">+</text>
+                <text x="0" y="38" fill="#38bdf8" font-size="14" font-weight="bold" text-anchor="middle">-</text>
+                <!-- Voltage text label -->
+                <text id="svg-volts-text" x="0" y="5" fill="#38bdf8" font-size="14" font-weight="bold" font-family="Orbitron" text-anchor="middle">12V</text>
+              </g>
+
+              <!-- SWITCH (Top Side) -->
+              <g transform="translate(300, 60)" class="cursor-pointer" onclick="toggleCircuitSwitch()">
+                <circle cx="-30" cy="0" r="5" fill="#9ca3af"/>
+                <circle cx="30" cy="0" r="5" fill="#9ca3af"/>
+                <!-- Switch Blade Line -->
+                <line id="svg-switch-blade" x1="-30" y1="0" x2="28" y2="0" stroke="#10b981" stroke-width="4" stroke-linecap="round" class="transition-all duration-300"/>
+                <text x="0" y="-15" fill="#9ca3af" font-size="11" text-anchor="middle">Saklar (Switch)</text>
+              </g>
+
+              <!-- RESISTOR (Right Side) -->
+              <g transform="translate(500, 160)" class="cursor-pointer" onclick="focusSlider('resistance')">
+                <rect x="-25" y="-40" width="50" height="80" rx="6" fill="#1f2937" stroke="#f59e0b" stroke-width="2"/>
+                <!-- Zigzag lines inside -->
+                <path d="M 0,-30 L 0,-20 L -12,-12 L 12,-4 L -12,4 L 12,12 L 0,20 L 0,30" fill="none" stroke="#f59e0b" stroke-width="2.5" stroke-linejoin="round"/>
+                <text id="svg-res-text" x="35" y="5" fill="#f59e0b" font-size="12" font-weight="bold" font-family="Orbitron" text-anchor="start">10Ω</text>
+              </g>
+
+              <!-- LIGHT BULB / HEATING ELEMENT (Bottom Side) -->
+              <g transform="translate(300, 260)" id="svg-bulb-group">
+                <!-- Outer Glow Circle -->
+                <circle id="svg-bulb-glow" cx="0" cy="0" r="35" fill="#f97316" opacity="0.2" filter="url(#glow-bulb)" />
+                <!-- Bulb Base -->
+                <rect x="-12" y="15" width="24" height="12" fill="#6b7280" rx="2" />
+                <!-- Bulb Glass Envelope -->
+                <circle cx="0" cy="-2" r="22" fill="#1f2937" stroke="#fb923c" stroke-width="2" id="svg-bulb-glass"/>
+                <!-- Filament Wire -->
+                <path id="svg-filament" d="M -10,12 L -6,-5 L 0,-15 L 6,-5 L 10,12" fill="none" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round"/>
+                <text x="0" y="42" fill="#9ca3af" font-size="11" text-anchor="middle">Aparato (Ilaw/Init)</text>
+              </g>
+
+              <!-- Animated Electrons Group (Populated dynamically via JS) -->
+              <g id="electrons-container"></g>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Real-Time Moving Current Graph Canvas -->
+        <div class="bg-gray-900/80 border border-gray-800 rounded-2xl p-4 shadow-xl backdrop-blur space-y-3">
+          <div class="flex flex-wrap justify-between items-center gap-2">
+            <div>
+              <h2 class="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center">
+                <i class="fa-solid fa-chart-line text-orange-400 mr-1.5"></i> Real-Time Current Graph (I vs Time)
+              </h2>
+              <p class="text-[11px] text-gray-500">Ipinakikita ang pagbabago ng kuryente sa paglipas ng segundo.</p>
+            </div>
+
+            <!-- Graph Controls -->
+            <div class="flex items-center gap-1.5">
+              <button id="btn-graph-play" onclick="toggleGraphPause()" class="px-2.5 py-1 rounded-lg bg-gray-800 hover:bg-gray-700 text-xs font-semibold text-gray-200 border border-gray-700 transition">
+                <i class="fa-solid fa-pause mr-1" id="graph-play-icon"></i> <span id="graph-play-text">I-pause</span>
+              </button>
+              <button onclick="resetGraph()" class="px-2.5 py-1 rounded-lg bg-gray-800 hover:bg-gray-700 text-xs font-semibold text-gray-200 border border-gray-700 transition">
+                <i class="fa-solid fa-rotate-left mr-1"></i> I-reset
+              </button>
+              <button onclick="exportGraphCSV()" class="px-2.5 py-1 rounded-lg bg-orange-600/80 hover:bg-orange-600 text-xs font-semibold text-white transition shadow-sm">
+                <i class="fa-solid fa-file-csv mr-1"></i> Export Data
+              </button>
+            </div>
+          </div>
+
+          <!-- Canvas Container -->
+          <div class="relative w-full h-48 bg-gray-950/90 rounded-xl border border-gray-800 overflow-hidden">
+            <canvas id="realtimeChartCanvas" class="w-full h-full"></canvas>
+          </div>
+
+          <!-- Graph Legend -->
+          <div class="flex items-center justify-end gap-4 text-xs text-gray-400 pt-1">
+            <span class="flex items-center gap-1.5">
+              <span class="w-3 h-0.5 bg-emerald-400 inline-block rounded"></span> Electric (Ampere)
+            </span>
+            <span class="flex items-center gap-1.5">
+              <span class="w-3 h-0.5 bg-sky-400 inline-block rounded"></span> Voltage (Volts)
+            </span>
+            <span class="flex items-center gap-1.5">
+              <span class="w-3 h-0.5 bg-orange-400 inline-block rounded"></span> watts (Watts)
+            </span>
+          </div>
+        </div>
+
+      </section>
+    </div>
+
+    <!-- QUIZ / CHALLENGE TAB VIEW -->
+    <div id="view-quiz" class="hidden lg:col-span-12 max-w-3xl mx-auto w-full space-y-5 py-2">
+      <div class="bg-gray-900/90 border border-gray-800 rounded-2xl p-5 sm:p-7 shadow-2xl backdrop-blur">
+        
+        <div class="flex items-center justify-between pb-4 border-b border-gray-800 mb-5">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-orange-500/20 border border-orange-500/40 flex items-center justify-center text-orange-400">
+              <i class="fa-solid fa-graduation-cap text-lg"></i>
+            </div>
+            <div>
+              <h2 class="text-lg font-bold text-white">Pagsusulit sa Batas ni Ohm (Ohm's Law Challenge)</h2>
+              <p class="text-xs text-gray-400">pagnasagot mo may bente ka!</p>
+            </div>
+          </div>
+          <div class="bg-gray-800 px-3 py-1.5 rounded-xl border border-gray-700 text-xs font-semibold text-orange-400">
+            points mo: <span id="quiz-score" class="font-digital text-sm">0</span> / <span id="quiz-total">0</span>
+          </div>
+        </div>
+
+        <!-- Quiz Question Box -->
+        <div id="quiz-card" class="space-y-5">
+          <div class="bg-gray-950 p-4 rounded-xl border border-gray-800">
+            <span id="quiz-category" class="text-[10px] uppercase font-bold text-orange-400 tracking-wider">Subok #1</span>
+            <h3 id="quiz-question" class="text-base sm:text-lg font-semibold text-gray-100 mt-1">
+              Naga loading ngani...
+            </h3>
+          </div>
+
+          <!-- Options Grid -->
+          <div id="quiz-options" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <!-- Dynamic Buttons generated by JS -->
+          </div>
+
+          <!-- Feedback Box -->
+          <div id="quiz-feedback" class="hidden p-3.5 rounded-xl text-sm font-medium flex items-center gap-2.5"></div>
+
+          <!-- Next Button -->
+          <div class="flex justify-end pt-3">
+            <button id="btn-next-quiz" onclick="generateQuizQuestion()" class="px-5 py-2.5 rounded-xl bg-orange-600 hover:bg-orange-500 font-semibold text-white text-sm shadow-lg shadow-orange-600/30 transition flex items-center gap-2">
+              <span>nixt quistion</span> <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Formula Guide Box for Quick Reference -->
+        <div class="mt-8 p-4 bg-gray-950/60 rounded-xl border border-gray-800 text-xs text-gray-400 space-y-2">
+          <p class="font-bold text-gray-300 uppercase tracking-wider text-[11px]"><i class="fa-solid fa-lightbulb text-amber-400 mr-1"></i> Gabay sa mo sa formula (Ohm's Law Triangle):</p>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center pt-1">
+            <div class="p-2 bg-gray-900 rounded-lg border border-gray-800 font-digital text-sky-300">V = I × R</div>
+            <div class="p-2 bg-gray-900 rounded-lg border border-gray-800 font-digital text-emerald-300">I = V / R</div>
+            <div class="p-2 bg-gray-900 rounded-lg border border-gray-800 font-digital text-amber-300">R = V / I</div>
+            <div class="p-2 bg-gray-900 rounded-lg border border-gray-800 font-digital text-orange-300">P = V × I</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900/60 border-t border-gray-800/80 py-3 px-4 text-center text-xs text-gray-500">
+    <p>APOY Physics Simulator &copy; 2026. Ang Pagtukoy sa perang ninakaw ng gobyerno.</p>
+  </footer>
+
+  <!-- Simulation JavaScript Logic -->
+  <script>
+    // --- Global Circuit State Variables ---
+    let voltage = 12.0;       // Volts
+    let resistance = 10.0;    // Ohms
+    let current = 1.2;        // Amperes ( calculated I = V/R )
+    let power = 14.4;         // Watts ( calculated P = V*I )
+    let isCircuitOn = true;   // Circuit Switch Toggle State
+
+    // Graph State
+    let isGraphPaused = false;
+    let graphData = [];       // Array of { time, current, voltage, power }
+    const MAX_GRAPH_POINTS = 60;
+    let timeStep = 0;
+
+    // Particles array for SVG Electrons and Canvas Flame
+    let electrons = [];
+    let flameParticles = [];
+    const NUM_ELECTRONS = 18;
+
+    // --- DOM Elements Cache ---
+    const sliderVoltage = document.getElementById('slider-voltage');
+    const sliderResistance = document.getElementById('slider-resistance');
+    
+    const readoutVoltage = document.getElementById('readout-voltage');
+    const readoutResistance = document.getElementById('readout-resistance');
+    const readoutCurrent = document.getElementById('readout-current');
+    const readoutMA = document.getElementById('readout-ma');
+    const readoutPower = document.getElementById('readout-power');
+    
+    const valVoltage = document.getElementById('val-voltage');
+    const valResistance = document.getElementById('val-resistance');
+    const powerBox = document.getElementById('power-box');
+    const overloadWarning = document.getElementById('overload-warning');
+    const statusBadge = document.getElementById('circuit-status-badge');
+    const switchText = document.getElementById('switch-text');
+    const switchBlade = document.getElementById('svg-switch-blade');
+
+    const svgVoltsText = document.getElementById('svg-volts-text');
+    const svgResText = document.getElementById('svg-res-text');
+    const svgBulbGlow = document.getElementById('svg-bulb-glow');
+    const svgBulbGlass = document.getElementById('svg-bulb-glass');
+    const svgFilament = document.getElementById('svg-filament');
+    const electronsContainer = document.getElementById('electrons-container');
+
+    const flameCanvas = document.getElementById('flameCanvas');
+    const flameCtx = flameCanvas.getContext('2d');
+    const chartCanvas = document.getElementById('realtimeChartCanvas');
+    const chartCtx = chartCanvas.getContext('2d');
+
+    // Wire path points for electrons movement (Rectangular loop 600x320 coord system)
+    // Circuit rectangle corners: Top-Left (100,60), Top-Right (500,60), Bottom-Right (500,260), Bottom-Left (100,260)
+    const circuitPathSegments = [
+      { start: {x: 100, y: 60}, end: {x: 500, y: 60}, len: 400 },   // Top
+      { start: {x: 500, y: 60}, end: {x: 500, y: 260}, len: 200 },  // Right
+      { start: {x: 500, y: 260}, end: {x: 100, y: 260}, len: 400 }, // Bottom
+      { start: {x: 100, y: 260}, end: {x: 100, y: 60}, len: 200 }   // Left
+    ];
+    const totalPathLength = 1200;
+
+    // --- Initialize System on Load ---
+    window.onload = function() {
+      resizeCanvases();
+      initElectrons();
+      updateCircuitValues();
+      generateQuizQuestion();
+
+      // Start Loops
+      requestAnimationFrame(animationLoop);
+      setInterval(updateGraphLoop, 250); // Record chart point every 250ms
+
+      window.addEventListener('resize', resizeCanvases);
+    };
+
+    function resizeCanvases() {
+      // Fit flame canvas
+      const fRect = flameCanvas.parentElement.getBoundingClientRect();
+      flameCanvas.width = fRect.width;
+      flameCanvas.height = fRect.height;
+
+      // Fit graph canvas
+      const cRect = chartCanvas.parentElement.getBoundingClientRect();
+      chartCanvas.width = cRect.width;
+      chartCanvas.height = cRect.height;
+    }
+
+    // --- Switch Navigation Tabs ---
+    function switchTab(tab) {
+      const simView = document.getElementById('view-sim');
+      const quizView = document.getElementById('view-quiz');
+      const btnSim = document.getElementById('nav-sim');
+      const btnQuiz = document.getElementById('nav-quiz');
+
+      if (tab === 'sim') {
+        simView.classList.remove('hidden');
+        quizView.classList.add('hidden');
+        btnSim.classList.add('active');
+        btnSim.classList.remove('text-gray-400');
+        btnQuiz.classList.remove('active');
+        btnQuiz.classList.add('text-gray-400');
+      } else {
+        simView.classList.add('hidden');
+        quizView.classList.remove('hidden');
+        btnQuiz.classList.add('active');
+        btnQuiz.classList.remove('text-gray-400');
+        btnSim.classList.remove('active');
+        btnSim.classList.add('text-gray-400');
+      }
+    }
+
+    // --- Circuit Calculations & Updates ---
+    function updateCircuitValues() {
+      voltage = parseFloat(sliderVoltage.value);
+      resistance = parseFloat(sliderResistance.value);
+
+      if (isCircuitOn) {
+        current = voltage / resistance;
+        power = voltage * current;
+      } else {
+        current = 0;
+        power = 0;
+      }
+
+      // Update Digital Readouts UI
+      readoutVoltage.textContent = voltage.toFixed(1);
+      readoutResistance.textContent = resistance.toFixed(1);
+      readoutCurrent.textContent = current.toFixed(2);
+      readoutMA.textContent = (current * 1000).toFixed(0) + " mA";
+      readoutPower.textContent = power.toFixed(1);
+
+      valVoltage.textContent = voltage + "V";
+      valResistance.textContent = resistance + "Ω";
+
+      svgVoltsText.textContent = voltage + "V";
+      svgResText.textContent = resistance + "Ω";
+
+      // Overload check (Power > 80 Watts trigger alert and glowing effects)
+      if (power > 80 && isCircuitOn) {
+        overloadWarning.classList.remove('hidden');
+        powerBox.classList.add('border-red-500', 'bg-red-950/40', 'glow-red');
+        powerBox.classList.remove('border-orange-500/20');
+      } else {
+        overloadWarning.classList.add('hidden');
+        powerBox.classList.remove('border-red-500', 'bg-red-950/40', 'glow-red');
+        powerBox.classList.add('border-orange-500/20');
+      }
+
+      // Bulb Glow and Filament Color visually matching Power
+      if (!isCircuitOn || current === 0) {
+        svgBulbGlow.setAttribute('opacity', '0');
+        svgBulbGlass.setAttribute('fill', '#1f2937');
+        svgFilament.setAttribute('stroke', '#4b5563');
+      } else {
+        // Opacity 0.1 to 1.0 based on power relative to 100W
+        const glowIntensity = Math.min(Math.max(power / 60, 0.15), 1.0);
+        svgBulbGlow.setAttribute('opacity', glowIntensity.toString());
+        
+        if (power > 80) {
+          svgBulbGlow.setAttribute('fill', '#ef4444');
+          svgFilament.setAttribute('stroke', '#f87171');
+          svgBulbGlass.setAttribute('fill', '#7f1d1d');
+        } else {
+          svgBulbGlow.setAttribute('fill', '#f97316');
+          svgFilament.setAttribute('stroke', '#fbbf24');
+          svgBulbGlass.setAttribute('fill', '#374151');
+        }
+      }
+    }
+
+    // Toggle Circuit Switch State
+    function toggleCircuitSwitch() {
+      isCircuitOn = !isCircuitOn;
+      if (isCircuitOn) {
+        statusBadge.textContent = "BUKAS (ON)";
+        statusBadge.className = "px-2 py-0.5 rounded text-[10px] font-bold bg-green-500/20 text-green-400 border border-green-500/30";
+        switchText.textContent = "Sirkito: NAKABUKAS";
+        switchBlade.setAttribute('x2', '28');
+        switchBlade.setAttribute('y2', '0');
+        switchBlade.setAttribute('stroke', '#10b981');
+      } else {
+        statusBadge.textContent = "SARADO (OFF)";
+        statusBadge.className = "px-2 py-0.5 rounded text-[10px] font-bold bg-red-500/20 text-red-400 border border-red-500/30";
+        switchText.textContent = "Sirkito: NAKASARADO";
+        switchBlade.setAttribute('x2', '20');
+        switchBlade.setAttribute('y2', '-25');
+        switchBlade.setAttribute('stroke', '#ef4444');
+      }
+      updateCircuitValues();
+    }
+
+    // Presets handler
+    function applyPreset(type) {
+      if (!isCircuitOn) toggleCircuitSwitch();
+
+      if (type === 'normal') {
+        sliderVoltage.value = 12;
+        sliderResistance.value = 24;
+      } else if (type === 'high_r') {
+        sliderVoltage.value = 20;
+        sliderResistance.value = 180;
+      } else if (type === 'short') {
+        sliderVoltage.value = 35;
+        sliderResistance.value = 4;
+      } else if (type === 'night') {
+        sliderVoltage.value = 3;
+        sliderResistance.value = 50;
+      }
+      updateCircuitValues();
+    }
+
+    function focusSlider(target) {
+      if (target === 'voltage') sliderVoltage.focus();
+      if (target === 'resistance') sliderResistance.focus();
+    }
+
+    // --- Electron Animation Initialization ---
+    function initElectrons() {
+      electronsContainer.innerHTML = '';
+      electrons = [];
+
+      for (let i = 0; i < NUM_ELECTRONS; i++) {
+        const dist = (i / NUM_ELECTRONS) * totalPathLength;
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute("r", "4");
+        circle.setAttribute("fill", "#38bdf8");
+        circle.setAttribute("filter", "url(#glow-electron)");
+        electronsContainer.appendChild(circle);
+
+        electrons.push({
+          element: circle,
+          distance: dist
+        });
+      }
+    }
+
+    // Compute coordinate on circuit loop given distance offset
+    function getPointAtDistance(d) {
+      d = ((d % totalPathLength) + totalPathLength) % totalPathLength;
+      let accum = 0;
+
+      for (let seg of circuitPathSegments) {
+        if (d <= accum + seg.len) {
+          const ratio = (d - accum) / seg.len;
+          return {
+            x: seg.start.x + ratio * (seg.end.x - seg.start.x),
+            y: seg.start.y + ratio * (seg.end.y - seg.start.y)
+          };
+        }
+        accum += seg.len;
+      }
+      return { x: 100, y: 60 };
+    }
+
+    // --- Flame & Particle Generator ---
+    function spawnFlameParticle(x, y, powerFactor) {
+      const count = Math.floor(powerFactor * 3);
+      for (let i = 0; i < count; i++) {
+        flameParticles.push({
+          x: x + (Math.random() - 0.5) * 20,
+          y: y + (Math.random() - 0.5) * 10,
+          vx: (Math.random() - 0.5) * 1.5,
+          vy: -Math.random() * (2 + powerFactor * 2),
+          size: Math.random() * (4 + powerFactor * 6) + 2,
+          life: 1.0,
+          decay: Math.random() * 0.04 + 0.02,
+          color: powerFactor > 1.2 ? '#ef4444' : '#f97316'
+        });
+      }
+    }
+
+    function drawFlameParticles() {
+      flameCtx.clearRect(0, 0, flameCanvas.width, flameCanvas.height);
+
+      if (!isCircuitOn || power < 5) return;
+
+      // Position bulb relative to flame canvas overlay
+      const bulbX = flameCanvas.width * 0.5; // Bottom center bulb position
+      const bulbY = flameCanvas.height * 0.81;
+
+      const powerFactor = Math.min(power / 30, 2.5);
+      if (Math.random() < 0.6) {
+        spawnFlameParticle(bulbX, bulbY, powerFactor);
+      }
+
+      for (let i = flameParticles.length - 1; i >= 0; i--) {
+        const p = flameParticles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life -= p.decay;
+
+        if (p.life <= 0) {
+          flameParticles.splice(i, 1);
+          continue;
+        }
+
+        flameCtx.save();
+        flameCtx.globalAlpha = p.life;
+        flameCtx.fillStyle = p.color;
+        flameCtx.beginPath();
+        flameCtx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
+        flameCtx.fill();
+        flameCtx.restore();
+      }
+    }
+
+    // Main animation loop (SVG Electrons + Flame Canvas)
+    function animationLoop() {
+      // Update electron position based on current I (speed proportional to Current)
+      const speed = isCircuitOn ? Math.min(current * 2.5, 25) : 0;
+
+      electrons.forEach(e => {
+        if (speed > 0) {
+          e.distance += speed;
+        }
+        const pt = getPointAtDistance(e.distance);
+        e.element.setAttribute("cx", pt.x);
+        e.element.setAttribute("cy", pt.y);
+        e.element.setAttribute("opacity", isCircuitOn ? "1" : "0.1");
+      });
+
+      // Draw particle flame effects overlay
+      drawFlameParticles();
+
+      requestAnimationFrame(animationLoop);
+    }
+
+    // --- Real-Time Moving Graph Logic ---
+    function updateGraphLoop() {
+      if (isGraphPaused) return;
+
+      timeStep += 0.25;
+      graphData.push({
+        time: timeStep.toFixed(1),
+        current: current,
+        voltage: voltage,
+        power: power
+      });
+
+      if (graphData.length > MAX_GRAPH_POINTS) {
+        graphData.shift();
+      }
+
+      renderGraph();
+    }
+
+    function renderGraph() {
+      const w = chartCanvas.width;
+      const h = chartCanvas.height;
+      chartCtx.clearRect(0, 0, w, h);
+
+      if (graphData.length < 2) return;
+
+      const padding = 30;
+      const graphW = w - padding * 2;
+      const graphH = h - padding * 2;
+
+      // Axis lines
+      chartCtx.strokeStyle = '#374151';
+      chartCtx.lineWidth = 1;
+      chartCtx.beginPath();
+      chartCtx.moveTo(padding, padding);
+      chartCtx.lineTo(padding, h - padding);
+      chartCtx.lineTo(w - padding, h - padding);
+      chartCtx.stroke();
+
+      // Gridlines
+      chartCtx.strokeStyle = '#1f2937';
+      chartCtx.lineWidth = 0.5;
+      for (let i = 1; i <= 4; i++) {
+        let y = padding + (graphH / 4) * i;
+        chartCtx.beginPath();
+        chartCtx.moveTo(padding, y);
+        chartCtx.lineTo(w - padding, y);
+        chartCtx.stroke();
+      }
+
+      // Scaling factors (Max Current ~ 10A scale, Max Voltage ~ 50V scale, Max Power ~ 150W scale)
+      const maxI = 10;
+      const maxV = 50;
+      const maxP = 150;
+
+      // Plot Series Function
+      function drawSeries(key, maxVal, strokeColor) {
+        chartCtx.strokeStyle = strokeColor;
+        chartCtx.lineWidth = 2.5;
+        chartCtx.beginPath();
+
+        graphData.forEach((pt, idx) => {
+          const x = padding + (idx / (MAX_GRAPH_POINTS - 1)) * graphW;
+          const val = pt[key];
+          const y = (h - padding) - Math.min(val / maxVal, 1) * graphH;
+
+          if (idx === 0) chartCtx.moveTo(x, y);
+          else chartCtx.lineTo(x, y);
+        });
+
+        chartCtx.stroke();
+      }
+
+      // Draw Lines
+      drawSeries('voltage', maxV, '#38bdf8'); // Sky blue for V
+      drawSeries('power', maxP, '#f97316');   // Orange for P
+      drawSeries('current', maxI, '#34d399'); // Emerald green for I
+    }
+
+    function toggleGraphPause() {
+      isGraphPaused = !isGraphPaused;
+      const btnIcon = document.getElementById('graph-play-icon');
+      const btnText = document.getElementById('graph-play-text');
+
+      if (isGraphPaused) {
+        btnIcon.className = "fa-solid fa-play mr-1";
+        btnText.textContent = "I-play";
+      } else {
+        btnIcon.className = "fa-solid fa-pause mr-1";
+        btnText.textContent = "I-pause";
+      }
+    }
+
+    function resetGraph() {
+      graphData = [];
+      timeStep = 0;
+      renderGraph();
+    }
+
+    function exportGraphCSV() {
+      if (graphData.length === 0) {
+        alert("Walang data na mai-export pa!");
+        return;
+      }
+
+      let csvContent = "Time(s),Current(A),Voltage(V),Power(W)\n";
+      graphData.forEach(row => {
+        csvContent += `${row.time},${row.current},${row.voltage},${row.power}\n`;
+      });
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `APOY_Simulation_Data_${Date.now()}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // --- Quiz Mode Logic ---
+    let quizScore = 0;
+    let quizCount = 0;
+    let currentQuestion = null;
+
+    function generateQuizQuestion() {
+      document.getElementById('quiz-feedback').classList.add('hidden');
+      document.getElementById('btn-next-quiz').classList.add('hidden');
+
+      // Randomly pick question type: 0: Find I, 1: Find V, 2: Find R, 3: Find P
+      const qType = Math.floor(Math.random() * 4);
+      let randV = (Math.floor(Math.random() * 8) + 1) * 6; // e.g. 6V to 48V
+      let randR = (Math.floor(Math.random() * 6) + 1) * 5; // e.g. 5Ω to 30Ω
+      let correctAns = 0;
+      let promptText = "";
+      let unit = "";
+
+      if (qType === 0) {
+        // Find Current (I = V / R)
+        correctAns = randV / randR;
+        unit = "A";
+        promptText = `Kung ang sirkito ay may Boltahe ($V$) na ${randV}V at Resistensya ($R$) na ${randR}Ω, ano ang halaga ng Kuryente ($I$)?`;
+      } else if (qType === 1) {
+        // Find Voltage (V = I * R)
+        const randI = Math.floor(Math.random() * 5) + 1;
+        correctAns = randI * randR;
+        unit = "V";
+        promptText = `May dumadaloy na Kuryente ($I$) na ${randI}A sa isang resistensya ($R$) na ${randR}Ω. Ano ang kinakailangang Boltahe ($V$)?`;
+      } else if (qType === 2) {
+        // Find Resistance (R = V / I)
+        const randI = Math.floor(Math.random() * 4) + 1;
+        randV = randI * randR;
+        correctAns = randR;
+        unit = "Ω";
+        promptText = `Ang sirkito ay may Boltahe ($V$) na ${randV}V at nakakatanggap ng Kuryente ($I$) na ${randI}A. Ano ang Resistensya ($R$)?`;
+      } else {
+        // Find Power (P = V * I)
+        const randI = Math.floor(Math.random() * 4) + 1;
+        correctAns = randV * randI;
+        unit = "W";
+        promptText = `Kung ang isang aparato ay nakasaksak sa ${randV}V at kumukuha ng ${randI}A na kuryente, ano ang kabuuang Lakas ($P$ / Power) nito?`;
+      }
+
+      currentQuestion = {
+        prompt: promptText,
+        answer: correctAns,
+        unit: unit
+      };
+
+      document.getElementById('quiz-category').textContent = `Subok #${quizCount + 1}`;
+      document.getElementById('quiz-question').innerHTML = promptText.replace(/\$(.*?)\$/g, '<span class="text-orange-400 font-bold">$1</span>');
+
+      // Generate 4 multiple choices (1 correct, 3 wrong distractors)
+      let options = [correctAns];
+      while (options.length < 4) {
+        let delta = (Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * 4) + 1) * (qType === 3 ? 10 : 2);
+        let wrong = Math.max(1, correctAns + delta);
+        if (!options.includes(wrong)) {
+          options.push(wrong);
+        }
+      }
+
+      // Shuffle options
+      options.sort(() => Math.random() - 0.5);
+
+      const optionsBox = document.getElementById('quiz-options');
+      optionsBox.innerHTML = '';
+
+      options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = "p-3.5 bg-gray-800 hover:bg-gray-700 active:scale-95 text-gray-200 text-sm font-semibold rounded-xl border border-gray-700 transition text-center shadow";
+        btn.innerHTML = `${opt.toFixed(opt % 1 === 0 ? 0 : 1)} ${unit}`;
+        btn.onclick = () => checkQuizAnswer(opt, btn);
+        optionsBox.appendChild(btn);
+      });
+    }
+
+    function checkQuizAnswer(selected, selectedBtn) {
+      const feedbackBox = document.getElementById('quiz-feedback');
+      const nextBtn = document.getElementById('btn-next-quiz');
+      const optionsButtons = document.querySelectorAll('#quiz-options button');
+
+      optionsButtons.forEach(b => b.disabled = true); // Disable further clicks
+
+      quizCount++;
+      const isCorrect = Math.abs(selected - currentQuestion.answer) < 0.05;
+
+      if (isCorrect) {
+        quizScore++;
+        selectedBtn.className = "p-3.5 bg-green-900/60 text-green-300 font-bold text-sm rounded-xl border-2 border-green-500 text-center";
+        feedbackBox.className = "p-3.5 rounded-xl bg-green-950/80 border border-green-500/50 text-green-300 text-sm font-medium flex items-center gap-2";
+        feedbackBox.innerHTML = `<i class="fa-solid fa-circle-check text-green-400 text-lg"></i> <div><strong>TAMA!</strong> Magaling! Nakuha mo ang tamang sagot.</div>`;
+      } else {
+        selectedBtn.className = "p-3.5 bg-red-900/60 text-red-300 font-bold text-sm rounded-xl border-2 border-red-500 text-center";
+        feedbackBox.className = "p-3.5 rounded-xl bg-red-950/80 border border-red-500/50 text-red-300 text-sm font-medium flex items-center gap-2";
+        feedbackBox.innerHTML = `<i class="fa-solid fa-circle-xmark text-red-400 text-lg"></i> <div><strong>MALI!</strong> Ang tamang sagot ay <strong>${currentQuestion.answer.toFixed(1)} ${currentQuestion.unit}</strong>.</div>`;
+      }
+
+      document.getElementById('quiz-score').textContent = quizScore;
+      document.getElementById('quiz-total').textContent = quizCount;
+
+      feedbackBox.classList.remove('hidden');
+      nextBtn.classList.remove('hidden');
+    }
+  </script>
+</body>
+</html>
